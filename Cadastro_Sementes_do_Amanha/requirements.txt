@@ -1,3 +1,6 @@
-Flask
-python-dotenv
-pytest
+flask
+flask-sqlalchemy
+pandas
+openpyxl        # Excel
+reportlab       # PDF
+python-dateutil # parsing de datas robusto

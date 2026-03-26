@@ -1,20 +1,22 @@
-# Cadastro Sementes do Amanhã
+# Cadastro Sementes do Amanhã — API Flask
 
-Estrutura inicial do projeto Flask.
+API REST para **cadastro de atendidos**, **controle de frequência** e **transporte**.
 
-Como começar:
+- **Stack:** Flask · Flask‑SQLAlchemy · python‑dotenv · SQLite (DEV)
+- **Modelagem:** `atendidos` (dimensão), `frequencias` (fato temporal 1:N), `transportes` (1:1)
+- **Enums:** validados via `Enum` do SQLAlchemy (CHECK no SQLite)
+- **Config:** `.env` (local, fora do Git) + `.env.example` (modelo no Git)
 
-1. Criar e ativar virtualenv:
+---
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
+## 🚀 Começando
 
-2. Instalar dependências:
+### 1) Pré-requisitos
+- Python **3.14+**
+- Pip atualizado
+- (Opcional) CLI do **SQLite** para inspecionar tabelas
 
-```powershell
-pip install -r requirements.txt
-```
-
-3. Executar (ex.: `python -m flask run` após definir `FLASK_APP`).
+### 2) Clonar e entrar na pasta
+```bash
+git clone <URL-do-repo>
+cd Cadastro_Sementes_do_Amanha
