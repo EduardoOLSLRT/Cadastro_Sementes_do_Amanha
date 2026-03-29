@@ -1,6 +1,6 @@
-flask
-flask-sqlalchemy
-pandas
-openpyxl        # Excel
-reportlab       # PDF
-python-dateutil # parsing de datas robusto
+Flask
+Flask-SQLAlchemy
+python-dotenv
+python-dateutil
+# Flask-Migrate       # só quando for usar migrações
+# psycopg2-binary     # só quando for usar Postgres

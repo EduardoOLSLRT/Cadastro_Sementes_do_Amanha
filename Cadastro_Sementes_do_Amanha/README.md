@@ -1,22 +1,58 @@
 # Cadastro Sementes do Amanhã — API Flask
 
-API REST para **cadastro de atendidos**, **controle de frequência** e **transporte**.
+API REST para **cadastro de alunos**, **controle de frequência** e **transporte** da ONG **Sementes do Amanhã**.
 
-- **Stack:** Flask · Flask‑SQLAlchemy · python‑dotenv · SQLite (DEV)
-- **Modelagem:** `atendidos` (dimensão), `frequencias` (fato temporal 1:N), `transportes` (1:1)
-- **Enums:** validados via `Enum` do SQLAlchemy (CHECK no SQLite)
-- **Config:** `.env` (local, fora do Git) + `.env.example` (modelo no Git)
+## Stack
+
+- **Backend:** Flask
+- **ORM:** Flask-SQLAlchemy
+- **Banco (uso real):** PostgreSQL via **Supabase**
+- **Banco (desenvolvimento inicial/testes locais):** SQLite
+- **Configuração:** `python-dotenv`
+- **Migração futura:** Flask-Migrate (ainda não obrigatório no fluxo atual)
 
 ---
 
-## 🚀 Começando
+## Funcionalidades já implementadas
 
-### 1) Pré-requisitos
-- Python **3.14+**
-- Pip atualizado
-- (Opcional) CLI do **SQLite** para inspecionar tabelas
+- **Health check**
+- **Cadastro de usuários**
+- **Login**
+- **Cadastro de alunos**
+- **Listagem de alunos**
+- **Transporte (1:1 por aluno)**
+- **Lista de chamada por turma**
+- **Marcação de frequência**
+- **Relatório mensal de presença**
 
-### 2) Clonar e entrar na pasta
-```bash
-git clone <URL-do-repo>
-cd Cadastro_Sementes_do_Amanha
+---
+
+## Estrutura do projeto
+
+```text
+Cadastro_Sementes_do_Amanha/
+├─ app/
+│  ├─ __init__.py
+│  ├─ config.py
+│  ├─ database.py
+│  ├─ models/
+│  │  ├─ __init__.py
+│  │  ├─ users.py
+│  │  ├─ students.py
+│  │  ├─ attendance.py
+│  │  └─ transport.py
+│  ├─ routes/
+│  │  ├─ __init__.py
+│  │  ├─ main.py
+│  │  ├─ users.py
+│  │  ├─ students.py
+│  │  ├─ attendance.py
+│  │  └─ transport.py
+│  └─ services/
+│     ├─ __init__.py
+│     └─ turma.py
+├─ .env                  # NÃO versionar
+├─ .env.example          # versionar
+├─ app.py
+├─ requirements.txt
+└─ README.md
