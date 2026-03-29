@@ -2,11 +2,13 @@
 from flask import Blueprint, jsonify, request
 from dateutil import parser
 from sqlalchemy import func, case
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.database import db
 from app.models.atendidos import Atendido, Genero, Periodo, Situacao
 from app.models.frequencia import Frequencia, StatusFrequencia
 from app.models.transporte import Transporte, UsaVan
+from app.models.user import User
 from app.services.turma import calcular_turma
 
 # ---- helper: converter string -> Enum com erro amigável ----
@@ -35,7 +37,7 @@ def verificar_senha(hash_senha, senha_digitada):
 
 
 #  ROTA DE CADASTRO
-@main.route('/cadastro', methods=['GET', 'POST'])
+@main_bp.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     if request.method == 'GET':
         return '''
@@ -58,26 +60,23 @@ def cadastro():
     if not nome or not email or not senha:
         return ({'erro': 'Preencha todos os campos'}), 400
 
-    # Verifica se usuário já existe
-    for user in usuarios:
-        if user['email'] == email:
-            return ({'erro': 'Usuário já cadastrado'}), 400
+    # Verifica se usuário já existe no DB
+    if User.query.filter_by(email=email).first():
+        return ({'erro': 'Usuário já cadastrado'}), 400
 
     # Gera hash da senha
     senha_hash = gerar_hash_senha(senha)
 
-    # Salva usuário
-    usuarios.append({
-        'nome': nome,
-        'email': email,
-        'senha': senha_hash
-    })
+    # Salva usuário no banco
+    user = User(nome=nome, email=email, senha=senha_hash)
+    db.session.add(user)
+    db.session.commit()
 
     return ({'mensagem': 'Usuário cadastrado com sucesso!'}), 201
 
-
 # ROTA DE LOGIN
-@main.route('/login', methods=['GET', 'POST'])
+
+@main_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         return '''
@@ -98,12 +97,14 @@ def login():
     if not email or not senha:
         return ({'erro': 'Preencha todos os campos'}), 400
 
-    for user in usuarios:
-        if user['email'] == email:
-            if verificar_senha(user['senha'], senha):
-                return ({'mensagem': 'Login realizado com sucesso!'}), 200
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return ({'erro': 'Email ou senha inválidos'}), 401
 
-    return ({'erro': 'Email ou senha inválidos'}), 401
+    if not verificar_senha(user.senha, senha):
+        return ({'erro': 'Email ou senha inválidos'}), 401
+
+    return ({'mensagem': 'Login realizado com sucesso!'}), 200
 
 
 

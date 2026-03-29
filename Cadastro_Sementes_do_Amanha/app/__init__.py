@@ -27,6 +27,7 @@ def create_app():
         from app.models.atendidos import Atendido
         from app.models.transporte import Transporte
         from app.models.frequencia import Frequencia
+        from app.models.user import User
 
         db.create_all()
 
