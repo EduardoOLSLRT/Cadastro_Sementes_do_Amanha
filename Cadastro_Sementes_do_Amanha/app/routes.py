@@ -26,6 +26,90 @@ main_bp = Blueprint("main", __name__)
 def health():
     return jsonify({"status": "ok", "service": "Sementes do Amanhã API"}), 200
 
+# FUNÇÕES DE SEGURANÇA
+def gerar_hash_senha(senha):
+    return generate_password_hash(senha)
+
+def verificar_senha(hash_senha, senha_digitada):
+    return check_password_hash(hash_senha, senha_digitada)
+
+
+#  ROTA DE CADASTRO
+@main.route('/cadastro', methods=['GET', 'POST'])
+def cadastro():
+    if request.method == 'GET':
+        return '''
+        <h2>Cadastro</h2>
+        <form action="/cadastro" method="post">
+            <input name="nome" placeholder="Nome"><br>
+            <input name="email" placeholder="Email"><br>
+            <input name="senha" placeholder="Senha" type="password"><br>
+            <button type="submit">Cadastrar</button>
+        </form>
+        <p><a href="/login">Ir para login</a></p>
+        '''
+
+    dados = request.form
+
+    nome = dados.get('nome')
+    email = dados.get('email')
+    senha = dados.get('senha')
+
+    if not nome or not email or not senha:
+        return ({'erro': 'Preencha todos os campos'}), 400
+
+    # Verifica se usuário já existe
+    for user in usuarios:
+        if user['email'] == email:
+            return ({'erro': 'Usuário já cadastrado'}), 400
+
+    # Gera hash da senha
+    senha_hash = gerar_hash_senha(senha)
+
+    # Salva usuário
+    usuarios.append({
+        'nome': nome,
+        'email': email,
+        'senha': senha_hash
+    })
+
+    return ({'mensagem': 'Usuário cadastrado com sucesso!'}), 201
+
+
+# ROTA DE LOGIN
+@main.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return '''
+        <h2>Login</h2>
+        <form action="/login" method="post">
+            <input name="email" placeholder="Email"><br>
+            <input name="senha" placeholder="Senha" type="password"><br>
+            <button type="submit">Entrar</button>
+        </form>
+        <p><a href="/cadastro">Ir para cadastro</a></p>
+        '''
+
+    dados = request.form
+
+    email = dados.get('email')
+    senha = dados.get('senha')
+
+    if not email or not senha:
+        return ({'erro': 'Preencha todos os campos'}), 400
+
+    for user in usuarios:
+        if user['email'] == email:
+            if verificar_senha(user['senha'], senha):
+                return ({'mensagem': 'Login realizado com sucesso!'}), 200
+
+    return ({'erro': 'Email ou senha inválidos'}), 401
+
+
+
+
+
+
 # ---------- ATENDIDOS ----------
 atendidos_bp = Blueprint("atendidos", __name__, url_prefix="/atendidos")
 
