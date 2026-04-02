@@ -3,6 +3,9 @@ import os
 
 app = create_app()
 
+with app.app_context():
+    db.create_all()
+
 if __name__ == "__main__":
     host = os.getenv("HOST", "127.0.0.1")
     port = int(os.getenv("PORT", "5000"))

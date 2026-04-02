@@ -25,3 +25,15 @@ def login():
     if not u or not u.check_password(data.get("password","")):
         return jsonify({"error":"credenciais inválidas"}), 401
     return jsonify({"message":"login ok", "user":{"id":u.id,"email":u.email,"role":u.role}})
+
+@bp.route("/<int:id>", methods=["DELETE"])
+def delete_user(id):
+
+    u = User.query.get_or_404(id)
+
+    if not u:
+        return jsonify({"error":"Usuário não encontrado"}), 404
+
+    db.session.delete(u)
+    db.session.commit()
+    return jsonify({"message":"Usuário deletado"}), 200
