@@ -7,7 +7,11 @@ load_dotenv(BASE_DIR / ".env")
 
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "change-me")
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL") or f"sqlite:///{(BASE_DIR / 'sementes.db').as_posix()}"
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
+
+    if not SQLALCHEMY_DATABASE_URI:
+        raise RuntimeError(f"DATABASE_URL não encontrada no .env ({BASE_DIR / '.env'})")
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG = False
     TESTING = False
@@ -21,4 +25,7 @@ class ProductionConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
+
+    if not SQLALCHEMY_DATABASE_URI:
+        raise RuntimeError(f"DATABASE_URL não encontrada no .env para testes ({BASE_DIR / '.env'})")
