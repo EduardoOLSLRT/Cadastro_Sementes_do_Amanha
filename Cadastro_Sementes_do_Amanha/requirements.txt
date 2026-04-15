@@ -2,5 +2,6 @@ Flask
 Flask-SQLAlchemy
 python-dotenv
 python-dateutil
+python-docx
 # Flask-Migrate       # só quando for usar migrações
 # psycopg2-binary     # só quando for usar Postgres
