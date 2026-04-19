@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Sementes do Amanhã - Emitir Documentos</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input { width: 300px; padding: 8px; }
+        button { padding: 10px 20px; background: #28a745; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Gerar Termo de Uso de Imagem</h1>
+    <form id="docForm">
+        <div class="form-group">
+            <label>Nome da Criança:</label>
+            <input type="text" name="nome_crianca" required>
+        </div>
+        <div class="form-group">
+            <label>Nacionalidade:</label>
+            <input type="text" name="nacionalidade_crianca" value="Brasileira">
+        </div>
+        <div class="form-group">
+            <label>Idade:</label>
+            <input type="text" name="idade_crianca" placeholder="Ex: 8 anos">
+        </div>
+        <div class="form-group">
+            <label>Nome do Responsável:</label>
+            <input type="text" name="nome_responsavel" required>
+        </div>
+        <div class="form-group">
+            <label>RG do Responsável:</label>
+            <input type="text" name="rg_responsavel" required>
+        </div>
+        <div class="form-group">
+            <label>CPF do Responsável:</label>
+            <input type="text" name="cpf_responsavel" required>
+        </div>
+        <div class="form-group">
+            <label>Endereço:</label>
+            <input type="text" name="endereco_responsavel" required>
+        </div>
+
+        <button type="submit">Gerar Documento Word</button>
+    </form>
+
+    <script>
+        document.getElementById('docForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            // Chama a rota que criamos no backend
+            const response = await fetch('/documents/termo_uso_imagem/emitir', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "termo_imagem_preenchido.docx";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } else {
+                alert("Erro ao gerar documento.");
+            }
+        };
+    </script>
+</body>
+</html>

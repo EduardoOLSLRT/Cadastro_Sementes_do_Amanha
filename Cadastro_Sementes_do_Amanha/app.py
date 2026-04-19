@@ -1,16 +1,23 @@
 import os
+from dotenv import load_dotenv
+from flask import render_template
 from app import create_app
-from app.routes.documents import bp as documents_bp
 
+load_dotenv()
+
+# Aqui está o segredo: dizemos ao Flask exatamente onde a pasta templates está
 app = create_app()
+app.template_folder = os.path.join(os.getcwd(), 'templates')
 
-# Registra a Blueprint de documentos ANTES de rodar o servidor
-# Isso permite que as rotas /documents/<slug>/emitir fiquem ativas
-app.register_blueprint(documents_bp)
+@app.route('/emitir-docs')
+def pagina_emissao():
+    # O nome aqui deve ser igual ao arquivo na sua pasta templates
+    return render_template('termo_uso_de_imagem.html')
 
 if __name__ == "__main__":
     host = os.getenv("HOST", "127.0.0.1")
     port = int(os.getenv("PORT", "5000"))
     debug = os.getenv("FLASK_DEBUG", "1") in ("1", "true", "True")
-    print(f"Servidor iniciado em http://{host}:{port}")
+    
+    print(f"Servidor iniciado em http://{host}:{port}/emitir-docs")
     app.run(host=host, port=port, debug=debug)

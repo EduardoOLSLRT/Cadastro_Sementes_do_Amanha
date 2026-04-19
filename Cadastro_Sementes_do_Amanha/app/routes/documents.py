@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, abort, request, send_file
 from pathlib import Path
 # Certifique-se de importar a função do seu service
-# Exemplo: from app.services.document_service import preencher_documento
+from app.services.document_service import preencher_documento
 
 bp = Blueprint("documents", __name__, url_prefix="/documents")
 
