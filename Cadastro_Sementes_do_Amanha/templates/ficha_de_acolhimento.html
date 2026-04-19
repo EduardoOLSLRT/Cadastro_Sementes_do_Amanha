@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Sementes do Amanhã - Ficha de Acolhimento</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; color: #333; background-color: #f4f7f6; }
+        .container { max-width: 800px; margin: auto; border: 1px solid #ddd; padding: 30px; border-radius: 8px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; border-bottom: 2px solid #28a745; padding-bottom: 10px; }
+        h3 { color: #27ae60; margin-top: 25px; border-left: 4px solid #27ae60; padding-left: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .row { display: flex; gap: 15px; margin-bottom: 5px; }
+        .row div { flex: 1; }
+        button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 18px; margin-top: 30px; font-weight: bold; }
+        button:hover { background: #218838; }
+        .back-link { display: block; text-align: center; margin-top: 20px; color: #666; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ficha de Acolhimento</h1>
+        
+        <form id="docForm">
+            <h3>1. Dados Pessoais da Criança</h3>
+            <div class="form-group">
+                <label>Nome Completo:</label>
+                <input type="text" name="nome_crianca" required>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <label>Data de Nascimento:</label>
+                    <input type="text" name="data_nascimento" placeholder="dd/mm/aaaa">
+                </div>
+                <div class="form-group">
+                    <label>Idade:</label>
+                    <input type="text" name="idade">
+                </div>
+                <div class="form-group">
+                    <label>Sexo:</label>
+                    <input type="text" name="sexo">
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <label>Naturalidade:</label>
+                    <input type="text" name="naturalidade">
+                </div>
+                <div class="form-group">
+                    <label>Raça/Cor:</label>
+                    <input type="text" name="raca_cor">
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <label>RG:</label>
+                    <input type="text" name="rg_crianca">
+                </div>
+                <div class="form-group">
+                    <label>CPF:</label>
+                    <input type="text" name="cpf_crianca">
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <label>CRAS de Referência:</label>
+                    <input type="text" name="cras_referencia">
+                </div>
+                <div class="form-group">
+                    <label>NIS:</label>
+                    <input type="text" name="nis">
+                </div>
+            </div>
+
+            <h3>2. Localização</h3>
+            <div class="form-group">
+                <label>Endereço:</label>
+                <input type="text" name="endereco">
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <label>Bairro:</label>
+                    <input type="text" name="bairro">
+                </div>
+                <div class="form-group">
+                    <label>Cidade:</label>
+                    <input type="text" name="cidade" value="Taboão da Serra">
+                </div>
+                <div class="form-group">
+                    <label>CEP:</label>
+                    <input type="text" name="cep">
+                </div>
+            </div>
+
+            <h3>3. Responsável Legal</h3>
+            <div class="form-group">
+                <label>Nome do Responsável:</label>
+                <input type="text" name="responsavel_1_nome">
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <label>RG Responsável:</label>
+                    <input type="text" name="responsavel_1_r g "> </div>
+                <div class="form-group">
+                    <label>CPF Responsável:</label>
+                    <input type="text" name="responsavel_1_cpf">
+                </div>
+                <div class="form-group">
+                    <label>Celular:</label>
+                    <input type="text" name="responsavel_1_celular">
+                </div>
+            </div>
+
+            <h3>4. Saúde</h3>
+            <div class="row">
+                <div class="form-group">
+                    <label>Usa Medicamento Contínuo?</label>
+                    <input type="text" name="medicamento_continuo" placeholder="Sim/Não">
+                </div>
+                <div class="form-group">
+                    <label>Alergia a algo?</label>
+                    <input type="text" name="alergia_qual" placeholder="Não / Qual?">
+                </div>
+            </div>
+
+            <button type="submit">Gerar Ficha de Acolhimento (Word)</button>
+        </form>
+        <a href="/emitir-docs" class="back-link">← Voltar ao Menu</a>
+    </div>
+
+    <script>
+        document.getElementById('docForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            const response = await fetch('/documents/ficha_acolhimento/emitir', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "ficha_acolhimento_preenchida.docx";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } else {
+                alert("Erro ao gerar a ficha. Verifique o console do servidor.");
+            }
+        };
+    </script>
+</body>
+</html>
