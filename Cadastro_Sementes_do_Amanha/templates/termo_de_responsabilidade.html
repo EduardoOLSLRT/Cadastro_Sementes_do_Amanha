@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Sementes do Amanhã - Termo de Responsabilidade</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px; }
+        h1 { color: #2c3e50; font-size: 24px; text-align: center; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .row { display: flex; gap: 10px; }
+        .row div { flex: 1; }
+        button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        button:hover { background: #218838; }
+        .back-link { display: block; text-align: center; margin-top: 15px; color: #666; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerar Termo de Responsabilidade</h1>
+        
+        <form id="docForm">
+            <div class="form-group">
+                <label>Nome da Criança/Adolescente:</label>
+                <input type="text" name="nome_crianca" required>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label>Nome da Mãe:</label>
+                    <input type="text" name="nome_mae" required>
+                </div>
+                <div class="form-group">
+                    <label>Nome do Pai:</label>
+                    <input type="text" name="nome_pai">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label>Horário de Entrada:</label>
+                    <input type="text" name="horario_entrada" placeholder="Ex: 08:00">
+                </div>
+                <div class="form-group">
+                    <label>Horário de Saída:</label>
+                    <input type="text" name="horario_saida" placeholder="Ex: 12:00">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label>Dia:</label>
+                    <input type="text" name="dia" placeholder="Ex: 19">
+                </div>
+                <div class="form-group">
+                    <label>Mês:</label>
+                    <input type="text" name="mes" placeholder="Ex: Abril">
+                </div>
+                <div class="form-group">
+                    <label>Ano:</label>
+                    <input type="text" name="ano" value="2026">
+                </div>
+            </div>
+
+            <button type="submit">Gerar Documento Word</button>
+        </form>
+        <a href="/emitir-docs" class="back-link">← Voltar</a>
+    </div>
+
+    <script>
+        document.getElementById('docForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            // Rota específica para o Termo de Responsabilidade
+            const response = await fetch('/documents/termo_responsabilidade/emitir', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "termo_responsabilidade_preenchido.docx";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } else {
+                const err = await response.json();
+                alert("Erro ao gerar documento: " + (err.error || "Erro desconhecido"));
+            }
+        };
+    </script>
+</body>
+</html>
