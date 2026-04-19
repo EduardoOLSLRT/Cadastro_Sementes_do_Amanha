@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Sementes do Amanhã - Autorização de Saída</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; color: #333; background-color: #f9f9f9; }
+        .container { max-width: 700px; margin: auto; border: 1px solid #ddd; padding: 25px; border-radius: 8px; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; font-size: 22px; margin-bottom: 20px; }
+        h3 { color: #2980b9; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-top: 25px; }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .row { display: flex; gap: 10px; }
+        .row div { flex: 1; }
+        .responsavel-box { background: #f1f8ff; padding: 15px; border-radius: 4px; margin-bottom: 10px; border: 1px solid #d1e3f5; }
+        button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 20px; font-weight: bold; }
+        button:hover { background: #218838; }
+        .back-link { display: block; text-align: center; margin-top: 15px; color: #666; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Autorização para Saída Desacompanhada</h1>
+        
+        <form id="docForm">
+            <h3>1. Dados do Responsável Legal</h3>
+            <div class="row">
+                <div class="form-group">
+                    <label>Nome do Responsável:</label>
+                    <input type="text" name="nome_responsavel" required>
+                </div>
+                <div class="form-group">
+                    <label>RG do Responsável:</label>
+                    <input type="text" name="rg_responsavel" required>
+                </div>
+            </div>
+
+            <h3>2. Dados da Criança</h3>
+            <div class="form-group">
+                <label>Nome da Criança/Adolescente:</label>
+                <input type="text" name="nome_crianca" required>
+            </div>
+            <div class="form-group">
+                <label>Período das Atividades (Manhã/Tarde):</label>
+                <input type="text" name="periodo_atividades" placeholder="Ex: Manhã">
+            </div>
+
+            <h3>3. Pessoas Autorizadas a Retirar (Além dos Pais)</h3>
+            <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Preencha apenas as que forem necessárias (conforme o documento Word):</p>
+            
+            <div class="responsavel-box">
+                <div class="row">
+                    <div class="form-group"><label>1. Nome:</label><input type="text" name="resp_1_nome"></div>
+                    <div class="form-group"><label>Parentesco:</label><input type="text" name="resp_1_parentesco"></div>
+                </div>
+            </div>
+
+            <div class="responsavel-box">
+                <div class="row">
+                    <div class="form-group"><label>2. Nome:</label><input type="text" name="resp_2_nome"></div>
+                    <div class="form-group"><label>Parentesco:</label><input type="text" name="resp_2_parentesco"></div>
+                </div>
+            </div>
+
+            <div class="responsavel-box">
+                <div class="row">
+                    <div class="form-group"><label>3. Nome:</label><input type="text" name="resp_3_nome"></div>
+                    <div class="form-group"><label>Parentesco:</label><input type="text" name="resp_3_parentesco"></div>
+                </div>
+            </div>
+
+            <h3>4. Data do Documento</h3>
+            <div class="row">
+                <div class="form-group"><label>Dia:</label><input type="text" name="dia" placeholder="Ex: 19"></div>
+                <div class="form-group"><label>Mês:</label><input type="text" name="mes" placeholder="Ex: Abril"></div>
+                <div class="form-group"><label>Ano:</label><input type="text" name="ano" value="2026"></div>
+            </div>
+
+            <button type="submit">Gerar Documento (Word)</button>
+        </form>
+        <a href="/" class="back-link">← Voltar ao Menu</a>
+    </div>
+
+    <script>
+        document.getElementById('docForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            // Rota deve bater com o seu backend
+            const response = await fetch('/documents/termo_autorizacao_saida/emitir', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "autorizacao_saida_preenchida.docx";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } else {
+                alert("Erro ao gerar o documento. Verifique se o servidor está rodando.");
+            }
+        };
+    </script>
+</body>
+</html>
